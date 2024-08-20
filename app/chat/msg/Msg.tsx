@@ -1,14 +1,16 @@
 "use client";
 
-import { Flex, Heading, Text } from "@radix-ui/themes";
-import axios from "axios";
-import { useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import NewMsgForm from "./NewMsgForm";
 import { Message } from "@prisma/client";
+import { Flex, Heading, IconButton, Text } from "@radix-ui/themes";
+import axios from "axios";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { IoIosArrowBack } from "react-icons/io";
+import NewMsgForm from "./NewMsgForm";
 
 const Msg = () => {
   const search = useSearchParams();
+  const router = useRouter();
   const id = search.get("id");
   const [Msg, setMsg] = useState<Message[] | null>(null);
   const [mail, setMail] = useState<string | null>(null);
@@ -28,16 +30,25 @@ const Msg = () => {
     fetchData();
   }, [id]);
 
-  if (!id) return <Flex justify={"center"}>Select the Chat</Flex>;
+  if (!id) return <div className="hidden md:flex">Select the Chat</div>;
 
   return (
     <Flex
       direction={"column"}
-      className="h-[100%] my-4 mx-2"
+      className="h-[100%] my-4 mx-2 max-w-[100vw] md:w-full"
       justify={"between"}
     >
-      <Heading>{mail}</Heading>
-      <Flex direction={"column"} className="flex-1 mt-3" gap={"2"}>
+      <Flex align={"center"}>
+        <IconButton variant="ghost" onClick={() => router.push("/")}>
+          <IoIosArrowBack size={20} className="mx-2" />
+        </IconButton>
+        <Text className="text-sm md:text-xl">{mail}</Text>
+      </Flex>
+      <Flex
+        direction={"column"}
+        className="flex-1 mt-3 max-h-[80vh] overflow-y-auto "
+        gap={"2"}
+      >
         {Msg ? (
           Msg.map((m) => (
             <div

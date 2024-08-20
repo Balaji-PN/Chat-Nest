@@ -1,10 +1,10 @@
 "use client";
 
 import { Flex, Avatar, Text } from "@radix-ui/themes";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React from "react";
 
-const Msg = ({ receiver, chatId }: { receiver: string; chatId: string }) => {
+const Chat = ({ receiver, chatId }: { receiver: string; chatId: string }) => {
   const router = useRouter();
 
   return (
@@ -26,4 +26,4 @@ const Msg = ({ receiver, chatId }: { receiver: string; chatId: string }) => {
   );
 };
 
-export default Msg;
+export default Chat;

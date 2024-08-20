@@ -7,27 +7,38 @@ import "server-only";
 import UserBar from "./_components/UserBar";
 import ChatList from "./chat/ChatList";
 import Msg from "./chat/msg/Msg";
+import toast from "react-hot-toast";
 
-export default async function Home() {
+export default async function Home({
+  params,
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) {
   const session = await getServerSession();
+
+  const chatId = searchParams?.id ? true : false;
 
   if (!session) redirect("/signin");
   else {
     return (
       <Flex>
-        <Flex
-          direction={"column"}
-          className="py-4 min-h-svh w-3/12 hidden gap-6 dark:bg-zinc-900 px-2 rounded-sm"
+        <div
+          className={`py-4 w-[100%] min-h-svh md:w-3/12 gap-6 dark:bg-zinc-900 px-2 rounded-sm ${
+            chatId ? "hidden" : "flex"
+          } md:flex flex-col`}
         >
           <UserBar />
           <ChatList />
-        </Flex>
-        <Flex
-          direction={"column"}
-          className="min-h-svh w-9/12 hidden gap-6 px-2 rounded-sm"
+        </div>
+        <div
+          className={`min-h-svh md:w-9/12 gap-6 px-2 rounded-sm ${
+            chatId ? "flex" : "hidden"
+          }  md:flex flex-col`}
         >
           <Msg />
-        </Flex>
+        </div>
       </Flex>
     );
   }
