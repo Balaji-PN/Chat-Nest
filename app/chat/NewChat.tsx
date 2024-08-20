@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import { CiMail } from "react-icons/ci";
 import { IoAdd, IoPersonAddOutline } from "react-icons/io5";
 
-const NewChat = () => {
+const NewChat = ({ updateChat }: { updateChat: () => void }) => {
   const [email, setEmail] = useState("");
 
   return (
@@ -35,6 +35,8 @@ const NewChat = () => {
                   .post("/api/chat", { email: email })
                   .then((res) => toast.success("Chat created"))
                   .catch((err) => toast.error(err.response.data));
+
+                updateChat();
               }}
             >
               Add Friend <IoPersonAddOutline size={18} />

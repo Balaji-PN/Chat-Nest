@@ -5,9 +5,10 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import "server-only";
 import UserBar from "./_components/UserBar";
-import ChatList from "./chat/ChatList";
-import Msg from "./chat/msg/Msg";
-import toast from "react-hot-toast";
+import ChatProvider from "./chat/ChatProvider";
+import GroupProvider from "./chat/group/GroupProvider";
+import MsgProvider from "./chat/msg/MsgProvider";
+import GroupMsgProvider from "./chat/group/msg/GroupMsgProvider";
 
 export default async function Home({
   params,
@@ -19,6 +20,7 @@ export default async function Home({
   const session = await getServerSession();
 
   const chatId = searchParams?.id ? true : false;
+  const mode = searchParams?.mode;
 
   if (!session) redirect("/signin");
   else {
@@ -30,14 +32,16 @@ export default async function Home({
           } md:flex flex-col`}
         >
           <UserBar />
-          <ChatList />
+          <GroupProvider />
+          <ChatProvider />
         </div>
         <div
-          className={`min-h-svh md:w-9/12 gap-6 px-2 rounded-sm ${
+          className={`min-h-svh w-[100%] md:w-9/12 gap-6 px-2 rounded-sm ${
             chatId ? "flex" : "hidden"
           }  md:flex flex-col`}
         >
-          <Msg />
+          {mode === "chat" && <MsgProvider />}
+          {mode === "group" && <GroupMsgProvider />}
         </div>
       </Flex>
     );

@@ -4,7 +4,13 @@ import { Flex, Avatar, Text } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-const Chat = ({ receiver, chatId }: { receiver: string; chatId: string }) => {
+const ChatComp = ({
+  receiver,
+  chatId,
+}: {
+  receiver: string;
+  chatId: string;
+}) => {
   const router = useRouter();
 
   return (
@@ -26,4 +32,4 @@ const Chat = ({ receiver, chatId }: { receiver: string; chatId: string }) => {
   );
 };
 
-export default Chat;
+export default ChatComp;

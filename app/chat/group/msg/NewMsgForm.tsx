@@ -7,12 +7,10 @@ import { IoIosSend } from "react-icons/io";
 import { LuMessageSquareDashed } from "react-icons/lu";
 
 const NewMsgForm = ({
-  receiver,
-  chatId,
+  groupId,
   updateChats,
 }: {
-  receiver: String;
-  chatId: string;
+  groupId: string;
   updateChats: () => void;
 }) => {
   const [content, setContent] = useState("");
@@ -33,7 +31,7 @@ const NewMsgForm = ({
       <Button
         size={"3"}
         onClick={() => {
-          axios.post("/api/chat/msg", { content, receiver, chatId });
+          axios.post("/api/group/msg", { content, groupId });
           updateChats();
           setContent("");
         }}

@@ -31,3 +31,14 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({ status: 201 });
 }
+
+export async function GET(request: NextRequest) {
+  const session = await getServerSession();
+  const chats = await prisma.chat.findMany({
+    where: {
+      OR: [{ user1: session?.user?.email! }, { user2: session?.user?.email! }],
+    },
+  });
+
+  return NextResponse.json(chats);
+}

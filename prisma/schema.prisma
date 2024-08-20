@@ -98,3 +98,28 @@ model Message {
   receiver String
   chatRel  Chat     @relation(fields: [chatid], references: [id], onDelete: Cascade)
 }
+
+model Group {
+  id          String         @id @default(cuid())
+  name        String
+  description String
+  member      Members[]
+  messages    GroupMessage[]
+}
+
+model Members {
+  memberId String  @id @default(cuid())
+  groupId  String
+  userId   String  
+  isAdmin  Boolean
+  groupRel Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  @@index([userId, groupId])
+}
+
+model GroupMessage {
+  id       String @id @default(cuid())
+  content  String
+  sender   String
+  groupId  String
+  groupRel Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+}
