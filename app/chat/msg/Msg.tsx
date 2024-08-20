@@ -19,8 +19,6 @@ const Msg = () => {
   const id = search.get("id");
   const queryClient = useQueryClient();
 
-  if (search.get("mode") == "group") return;
-
   const { data, isLoading, error } = useQuery({
     queryKey: ["messages", id],
     queryFn: () => fetchMessages(id!),

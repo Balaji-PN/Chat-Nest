@@ -21,8 +21,6 @@ const GroupMsg = () => {
   const queryClient = useQueryClient();
   const { data: session } = useSession();
 
-  if (search.get("mode") === "chat") return null;
-
   const { data, isLoading, error } = useQuery({
     queryKey: ["messages", id],
     queryFn: () => fetchMessages(id!),
