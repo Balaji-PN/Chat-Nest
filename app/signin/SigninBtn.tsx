@@ -6,7 +6,7 @@ import { FcGoogle } from "react-icons/fc";
 
 const SigninBtn = () => {
   return (
-    <Button variant="outline" color="gray" onClick={() => signIn()}>
+    <Button variant="outline" color="gray" onClick={() => signIn("google")}>
       Signin with Google
       <FcGoogle />
     </Button>

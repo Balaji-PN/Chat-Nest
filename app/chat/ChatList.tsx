@@ -1,32 +1,18 @@
-"use client";
+"use server";
 
 import { Flex, Heading, Text } from "@radix-ui/themes";
 import ChatComp from "./Chat";
 import NewChat from "./NewChat";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Chat } from "@prisma/client";
-import axios from "axios";
-import { useSession } from "next-auth/react";
+import prisma from "@/prisma/client";
+import { getServerSession } from "next-auth";
 
-const fetchChats = async () => {
-  const response = await axios.get("/api/chat");
-  return response.data;
-};
-
-const ChatList = () => {
-  const {
-    data: chats,
-    isLoading,
-    error,
-  } = useQuery<Chat[]>({ queryKey: ["chats"], queryFn: fetchChats });
-  const queryClient = useQueryClient();
-
-  const { data: session } = useSession();
-
-  if (isLoading) return <Text>Loading...</Text>;
-
-  if (error) return <Text>Error loading Chats</Text>;
-
+const ChatList = async () => {
+  const session = await getServerSession();
+  const chats = await prisma.chat.findMany({
+    where: {
+      OR: [{ user1: session?.user?.email! }, { user2: session?.user?.email! }],
+    },
+  });
   return (
     <Flex direction="column" className="shadow-2xl rounded-md">
       <Flex
@@ -35,7 +21,7 @@ const ChatList = () => {
         align="center"
       >
         <Heading>Chats</Heading>
-        <NewChat updateChat={() => queryClient.invalidateQueries()} />
+        <NewChat />
       </Flex>
       <Flex
         gap="3"

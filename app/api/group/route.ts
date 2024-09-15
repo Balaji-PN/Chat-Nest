@@ -26,21 +26,3 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({ grp }, { status: 200 });
 }
-
-export async function GET(request: NextRequest) {
-  const session = await getServerSession();
-  const groups = await prisma.group.findMany({
-    where: {
-      member: {
-        some: {
-          userId: session?.user?.email!,
-        },
-      },
-    },
-    include: {
-      member: true,
-    },
-  });
-
-  return NextResponse.json(groups);
-}

@@ -1,93 +1,61 @@
-"use client";
-
-import { Group, GroupMessage } from "@prisma/client";
-import { Flex, Heading, IconButton, Text } from "@radix-ui/themes";
-import axios from "axios";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Flex, Heading, IconButton, ScrollArea, Text } from "@radix-ui/themes";
 import { IoIosArrowBack } from "react-icons/io";
 import NewMsgForm from "./NewMsgForm";
-import { useSession } from "next-auth/react";
+import TopBar from "./TopBar";
 
-const fetchMessages = async (id: string) => {
-  const res = await axios.get(`/api/group/msg?id=${id}`);
-  return res.data;
-};
-
-const GroupMsg = () => {
-  const search = useSearchParams();
-  const router = useRouter();
-  const id = search.get("id");
-  const queryClient = useQueryClient();
-  const { data: session } = useSession();
-
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["messages", id],
-    queryFn: () => fetchMessages(id!),
-    enabled: !!id, // Only run the query if `id` is not null
+const GroupMsg = async ({
+  groupId,
+  user,
+}: {
+  groupId: string;
+  user: string;
+}) => {
+  const group = await prisma.group.findUnique({ where: { id: groupId } });
+  const messages = await prisma.groupMessage.findMany({
+    where: { groupId },
   });
-
-  if (!id) return <div className="hidden md:flex">Select the Chat</div>;
-  if (isLoading) return <Text>Loading messages...</Text>;
-  if (error) return <Text>Error loading messages</Text>;
-
-  const messages: GroupMessage[] = data?.msg || [];
-  const group: Group = data?.group || {};
-
   return (
     <Flex
-      direction={"column"}
-      className="h-[100%] my-4 mx-2 max-w-[100vw] md:w-full"
-      justify={"between"}
+      direction="column"
+      className="h-screen max-h-screen py-4 mx-2 max-w-[100vw] md:w-full"
     >
-      <Flex align={"center"}>
-        <IconButton variant="ghost" onClick={() => router.push("/")}>
-          <IoIosArrowBack size={20} className="mx-2" />
-        </IconButton>
-        <Flex direction={"column"}>
-          <Heading>{group.name}</Heading>
-          <Text>{group.description}</Text>
-        </Flex>
+      <TopBar name={group?.name!} description={group?.description!} />
+      <Flex direction="column" className="overflow-hidden max-h-[86vh]">
+        <ScrollArea className="flex-grow min-h-[80vh] px-4 mb-4">
+          <Flex direction="column" gap="2" className="py-4 min-h-full">
+            {messages.length > 0 ? (
+              messages.map((m) => (
+                <div
+                  key={m.id}
+                  className={`flex ${
+                    m.sender === user ? "justify-end" : "justify-start"
+                  }`}
+                >
+                  <div
+                    className={`max-w-xs p-3 rounded-lg ${
+                      m.sender !== user
+                        ? "bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100"
+                        : "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100"
+                    }`}
+                  >
+                    <Text size="2">{m.content}</Text>
+                    {m.sender !== user && (
+                      <Text size="1" className="text-gray-400 mt-1">
+                        {m.sender}
+                      </Text>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <Flex align="center" justify="center" className="h-full">
+                <Text>No messages found.</Text>
+              </Flex>
+            )}
+          </Flex>
+        </ScrollArea>
       </Flex>
-      <Flex
-        direction={"column"}
-        className="flex-1 mt-3 max-h-[80vh] overflow-y-auto px-4"
-        gap={"2"}
-      >
-        {messages.length > 0 ? (
-          messages.map((m) => (
-            <div
-              key={m.id}
-              className={`flex ${
-                m.sender === session?.user?.email
-                  ? "justify-end"
-                  : "justify-start"
-              }`}
-            >
-              <div
-                className={`max-w-xs p-3 rounded-lg ${
-                  m.sender === session?.user?.email
-                    ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg dark:bg-gradient-to-r dark:from-blue-600 dark:to-indigo-700"
-                    : "bg-gradient-to-r from-green-500 to-teal-600 text-white shadow-lg dark:bg-gradient-to-r dark:from-green-600 dark:to-teal-700"
-                }`}
-              >
-                <Text size="2">{m.content}</Text>
-                {m.sender !== session?.user?.email && (
-                  <Text size="1" className="text-gray-400 mt-1">
-                    {m.sender}
-                  </Text>
-                )}
-              </div>
-            </div>
-          ))
-        ) : (
-          <Text>No messages found.</Text>
-        )}
-      </Flex>
-      <NewMsgForm
-        updateChats={() => queryClient.invalidateQueries()}
-        groupId={id}
-      />
+      <NewMsgForm groupId={groupId} />
     </Flex>
   );
 };

@@ -8,7 +8,7 @@ import { BiGroup } from "react-icons/bi";
 import { CgRename } from "react-icons/cg";
 import { IoAdd } from "react-icons/io5";
 
-const NewGroup = ({ updateGrp }: { updateGrp: () => void }) => {
+const NewGroup = () => {
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
 
@@ -42,8 +42,6 @@ const NewGroup = ({ updateGrp }: { updateGrp: () => void }) => {
                   .post("/api/group", { name, desc })
                   .then(() => toast.success("Group Created"))
                   .catch((err) => toast.error(err.response.data));
-
-                updateGrp();
               }}
             >
               Create Group <BiGroup size={20} />

@@ -9,16 +9,14 @@ import { LuMessageSquareDashed } from "react-icons/lu";
 const NewMsgForm = ({
   receiver,
   chatId,
-  updateChats,
 }: {
   receiver: String;
   chatId: string;
-  updateChats: () => void;
 }) => {
   const [content, setContent] = useState("");
 
   return (
-    <Flex>
+    <Flex justify="between" gap="3">
       <TextField.Root
         placeholder="Type the Message...."
         className="flex-1"
@@ -34,9 +32,9 @@ const NewMsgForm = ({
         size={"3"}
         onClick={() => {
           axios.post("/api/chat/msg", { content, receiver, chatId });
-          updateChats();
           setContent("");
         }}
+        variant="outline"
       >
         <IoIosSend size={18} />
       </Button>

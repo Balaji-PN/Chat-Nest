@@ -6,17 +6,11 @@ import { useState } from "react";
 import { IoIosSend } from "react-icons/io";
 import { LuMessageSquareDashed } from "react-icons/lu";
 
-const NewMsgForm = ({
-  groupId,
-  updateChats,
-}: {
-  groupId: string;
-  updateChats: () => void;
-}) => {
+const NewMsgForm = ({ groupId }: { groupId: string }) => {
   const [content, setContent] = useState("");
 
   return (
-    <Flex>
+    <Flex gap="3">
       <TextField.Root
         placeholder="Type the Message...."
         className="flex-1"
@@ -29,10 +23,10 @@ const NewMsgForm = ({
         </TextField.Slot>
       </TextField.Root>
       <Button
+        variant="outline"
         size={"3"}
         onClick={() => {
           axios.post("/api/group/msg", { content, groupId });
-          updateChats();
           setContent("");
         }}
       >

@@ -3,23 +3,20 @@
 import { Flex } from "@radix-ui/themes";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import "server-only";
 import UserBar from "./_components/UserBar";
-import ChatProvider from "./chat/ChatProvider";
-import GroupProvider from "./chat/group/GroupProvider";
-import MsgProvider from "./chat/msg/MsgProvider";
-import GroupMsgProvider from "./chat/group/msg/GroupMsgProvider";
+import ChatList from "./chat/ChatList";
+import GroupList from "./chat/group/GroupList";
+import Msg from "./chat/msg/Msg";
+import GroupMsg from "./chat/group/msg/GroupMsg";
 
 export default async function Home({
-  params,
   searchParams,
 }: {
-  params: { slug: string };
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
   const session = await getServerSession();
 
-  const chatId = searchParams?.id ? true : false;
+  const chatId = searchParams?.id ? String(searchParams?.id) : "";
   const mode = searchParams?.mode;
 
   if (!session) redirect("/signin");
@@ -32,16 +29,20 @@ export default async function Home({
           } md:flex flex-col`}
         >
           <UserBar />
-          <GroupProvider />
-          <ChatProvider />
+          <GroupList />
+          <ChatList />
         </div>
         <div
           className={`min-h-svh w-[100%] md:w-9/12 gap-6 px-2 rounded-sm ${
             chatId ? "flex" : "hidden"
           }  md:flex flex-col`}
         >
-          {mode === "chat" && <MsgProvider />}
-          {mode === "group" && <GroupMsgProvider />}
+          {mode === "chat" && (
+            <Msg chatId={chatId} user={session?.user?.email!} />
+          )}
+          {mode === "group" && (
+            <GroupMsg groupId={chatId!} user={session.user?.email!} />
+          )}
         </div>
       </Flex>
     );

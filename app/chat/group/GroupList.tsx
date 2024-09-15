@@ -1,31 +1,15 @@
-"use client";
-
-import { Group } from "@prisma/client";
-import { Avatar, Badge, Flex, Heading, Text } from "@radix-ui/themes";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
-import { useRouter } from "next/navigation";
+import { Flex, Heading, Text } from "@radix-ui/themes";
+import Group from "./Group";
 import NewGroup from "./NewGroup";
+import prisma from "@/prisma/client";
+import { getServerSession } from "next-auth";
 
-const fetchGroups = async () => {
-  const response = await axios.get("/api/group");
-  return response.data;
-};
-
-const GroupList = () => {
-  const router = useRouter();
-  const queryClient = useQueryClient();
-
-  const {
-    data: groups,
-    isLoading,
-    error,
-  } = useQuery<Group[]>({ queryKey: ["groups"], queryFn: fetchGroups });
-
-  if (isLoading) return <Text>Loading...</Text>;
-
-  if (error) return <Text>Error loading groups</Text>;
-
+const GroupList = async () => {
+  const session = await getServerSession();
+  const groups = await prisma.group.findMany({
+    where: { member: { some: { userId: session?.user?.email! } } },
+    include: { member: true },
+  });
   return (
     <Flex direction="column" className="shadow-lg rounded-md">
       <Flex
@@ -34,7 +18,7 @@ const GroupList = () => {
         align={"center"}
       >
         <Heading>Groups</Heading>
-        <NewGroup updateGrp={() => queryClient.invalidateQueries()} />
+        <NewGroup />
       </Flex>
       <Flex
         gap="3"
@@ -43,21 +27,7 @@ const GroupList = () => {
         {groups && groups.length === 0 ? (
           <Text>No Groups</Text>
         ) : (
-          groups?.map((g) => (
-            <Flex
-              direction="column"
-              align={"center"}
-              className="w-16"
-              gap={"1"}
-              onClick={() => router.push(`/?mode=group&id=${g.id}`)}
-              key={g.id}
-            >
-              <Avatar fallback={g.name.charAt(0)} size="5" radius="full" />
-              <Badge className="overflow-clip max-w-14 text-wrap text-center">
-                {g.name}
-              </Badge>
-            </Flex>
-          ))
+          groups?.map((g) => <Group g={g} />)
         )}
       </Flex>
     </Flex>
