@@ -23,7 +23,7 @@ const ChatComp = ({ InitChats, user }: { InitChats: Chat[]; user: string }) => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase]);
+  });
 
   return (
     <>
