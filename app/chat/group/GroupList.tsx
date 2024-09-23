@@ -27,7 +27,7 @@ const GroupList = async () => {
         {groups && groups.length === 0 ? (
           <Text>No Groups</Text>
         ) : (
-          groups?.map((g) => <Group g={g} />)
+          groups?.map((g) => <Group g={g} key={g.id} />)
         )}
       </Flex>
     </Flex>

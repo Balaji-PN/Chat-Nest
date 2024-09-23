@@ -14,8 +14,7 @@ const UploadComp = () => {
       .upload(file?.name!, file!)
       .catch(() => toast.error("Error while uploading the image"))
       .then((res) => {
-        if (res?.error) toast.error(res.error.message);
-        else toast.success("Image Uploaded");
+        toast.success("Image Uploaded");
       });
   };
   return (

@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/client";
+import supabase from "@/app/_components/supabase";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const session = await getServerSession();
 
-  const msg = prisma.message
+  const msg = await prisma.message
     .create({
       data: {
         content: body.content,
@@ -38,8 +39,13 @@ export async function POST(request: NextRequest) {
         chatid: body.chatId,
       },
     })
-    .then(() => "Message created")
     .catch(() => "Message sending failed");
+
+  supabase.channel(body.chatId).send({
+    type: "broadcast",
+    event: "INSERT",
+    payload: { msg },
+  });
 
   return NextResponse.json(msg, { status: 200 });
 }

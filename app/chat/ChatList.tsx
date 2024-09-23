@@ -28,17 +28,7 @@ const ChatList = async () => {
         direction="column"
         className="dark:bg-zinc-900 bg-zinc-100 p-3 rounded-b-md"
       >
-        {chats && chats.length == 0 ? (
-          <Text>Error</Text>
-        ) : (
-          chats?.map((c) => (
-            <ChatComp
-              key={c.id}
-              chatId={c.id}
-              receiver={c.user1 == session?.user?.email! ? c.user2 : c.user1}
-            />
-          ))
-        )}
+        <ChatComp InitChats={chats} user={session?.user?.email!} />
       </Flex>
     </Flex>
   );

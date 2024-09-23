@@ -1,34 +1,55 @@
 "use client";
 
-import { Flex, Avatar, Text } from "@radix-ui/themes";
-import { useRouter } from "next/navigation";
-import React from "react";
+import { Chat } from "@prisma/client";
+import { Avatar, Flex, Text } from "@radix-ui/themes";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import supabase from "../_components/supabase";
 
-const ChatComp = ({
-  receiver,
-  chatId,
-}: {
-  receiver: string;
-  chatId: string;
-}) => {
+const ChatComp = ({ InitChats, user }: { InitChats: Chat[]; user: string }) => {
   const router = useRouter();
+  const param = useSearchParams();
+  console.log(param.get("id"));
+  const [chats, setChats] = useState(InitChats);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel(param.get("id")!)
+      .on("broadcast", { event: "INSERT" }, (payload) => {
+        console.log("HellO", payload);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [supabase]);
 
   return (
-    <Flex
-      align={"center"}
-      gap="2"
-      id={chatId}
-      onClick={() => router.push("/?mode=chat&id=" + chatId)}
-      className="hover:cursor-pointer"
-    >
-      <Avatar fallback={receiver.charAt(0)} size="4" radius="full" />
-      <Flex direction="column">
-        <Text size="2" weight={"medium"} className="mb-2">
-          {receiver}
-        </Text>
-        <Text size="1">Last Message</Text>
-      </Flex>
-    </Flex>
+    <>
+      {chats &&
+        chats?.map((c) => (
+          <Flex
+            align={"center"}
+            gap="2"
+            key={c.id}
+            onClick={() => router.push("/?mode=chat&id=" + c.id)}
+            className="hover:cursor-pointer"
+          >
+            <Avatar
+              fallback={c.user1 == user ? c.user2.charAt(0) : c.user1.charAt(0)}
+              size="4"
+              radius="full"
+            />
+            <Flex direction="column">
+              <Text size="2" weight={"medium"} className="mb-2">
+                {c.user1 == user ? c.user2 : c.user1}
+              </Text>
+              <Text size="1">Last Message</Text>
+            </Flex>
+          </Flex>
+        ))}
+    </>
   );
 };
 

@@ -14,7 +14,6 @@ const Group = ({ g }: { g: G }) => {
       className="w-16"
       gap={"1"}
       onClick={() => router.push(`/?mode=group&id=${g.id}`)}
-      key={g.id}
     >
       <Avatar fallback={g.name.charAt(0)} size="5" radius="full" />
       <Badge className="overflow-clip max-w-14 text-wrap text-center">
