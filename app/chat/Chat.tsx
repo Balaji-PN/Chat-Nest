@@ -2,28 +2,32 @@
 
 import { Chat } from "@prisma/client";
 import { Avatar, Flex, Text } from "@radix-ui/themes";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import supabase from "../_components/supabase";
 
 const ChatComp = ({ InitChats, user }: { InitChats: Chat[]; user: string }) => {
   const router = useRouter();
-  const param = useSearchParams();
-  console.log(param.get("id"));
   const [chats, setChats] = useState(InitChats);
 
   useEffect(() => {
     const channel = supabase
-      .channel(param.get("id")!)
-      .on("broadcast", { event: "INSERT" }, (payload) => {
-        console.log("HellO", payload);
-      })
+      .channel("schema-changes")
+      .on(
+        "postgres_changes",
+        { schema: "public", event: "*", table: "Chat" },
+        (payload: any) => {
+          if (payload.new.user1 == user || payload.new.user2 == user) {
+            setChats([...chats, payload.new]);
+          }
+        }
+      )
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  });
+  }, [supabase]);
 
   return (
     <>

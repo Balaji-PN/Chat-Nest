@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/client";
+import supabase from "@/app/_components/supabase";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -23,6 +24,12 @@ export async function POST(request: NextRequest) {
       data: { userId: session?.user?.email!, isAdmin: true, groupId: grp.id },
     })
     .catch();
+
+  supabase.channel(session?.user?.email!).send({
+    type: "broadcast",
+    event: "grp-add",
+    payload: grp,
+  });
 
   return NextResponse.json({ grp }, { status: 200 });
 }

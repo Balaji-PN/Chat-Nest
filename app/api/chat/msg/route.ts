@@ -29,6 +29,10 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const session = await getServerSession();
 
+  if (!body.content) {
+    return NextResponse.json("Content is Required", { status: 400 });
+  }
+
   const msg = await prisma.message
     .create({
       data: {
@@ -43,7 +47,7 @@ export async function POST(request: NextRequest) {
 
   supabase.channel(body.chatId).send({
     type: "broadcast",
-    event: "INSERT",
+    event: "real-msg",
     payload: { msg },
   });
 

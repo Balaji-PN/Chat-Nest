@@ -3,6 +3,7 @@ import Group from "./Group";
 import NewGroup from "./NewGroup";
 import prisma from "@/prisma/client";
 import { getServerSession } from "next-auth";
+import { group } from "console";
 
 const GroupList = async () => {
   const session = await getServerSession();
@@ -24,11 +25,7 @@ const GroupList = async () => {
         gap="3"
         className="dark:bg-zinc-900 bg-zinc-100 p-3 rounded-b-md overflow-x-scroll"
       >
-        {groups && groups.length === 0 ? (
-          <Text>No Groups</Text>
-        ) : (
-          groups?.map((g) => <Group g={g} key={g.id} />)
-        )}
+        <Group g={groups} user={session?.user?.email!} />
       </Flex>
     </Flex>
   );
