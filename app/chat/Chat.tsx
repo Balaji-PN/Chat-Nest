@@ -12,16 +12,10 @@ const ChatComp = ({ InitChats, user }: { InitChats: Chat[]; user: string }) => {
 
   useEffect(() => {
     const channel = supabase
-      .channel("schema-changes")
-      .on(
-        "postgres_changes",
-        { schema: "public", event: "*", table: "Chat" },
-        (payload: any) => {
-          if (payload.new.user1 == user || payload.new.user2 == user) {
-            setChats([...chats, payload.new]);
-          }
-        }
-      )
+      .channel(user)
+      .on("broadcast", { event: "chat-new" }, ({ payload }) => {
+        setChats((c) => [...c, payload]);
+      })
       .subscribe();
 
     return () => {
@@ -41,15 +35,16 @@ const ChatComp = ({ InitChats, user }: { InitChats: Chat[]; user: string }) => {
             className="hover:cursor-pointer"
           >
             <Avatar
+              src={c.user1 == user ? c.user2Profile! : c.user1Profile!}
               fallback={c.user1 == user ? c.user2.charAt(0) : c.user1.charAt(0)}
               size="4"
               radius="full"
             />
             <Flex direction="column">
               <Text size="2" weight={"medium"} className="mb-2">
-                {c.user1 == user ? c.user2 : c.user1}
+                {c.user1 == user ? c.user2Name : c.user1Name}
               </Text>
-              <Text size="1">Last Message</Text>
+              <Text size="1">{c.user1 == user ? c.user2 : c.user1}</Text>
             </Flex>
           </Flex>
         ))}

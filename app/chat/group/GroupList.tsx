@@ -1,9 +1,8 @@
-import { Flex, Heading, Text } from "@radix-ui/themes";
+import prisma from "@/prisma/client";
+import { Flex, Heading } from "@radix-ui/themes";
+import { getServerSession } from "next-auth";
 import Group from "./Group";
 import NewGroup from "./NewGroup";
-import prisma from "@/prisma/client";
-import { getServerSession } from "next-auth";
-import { group } from "console";
 
 const GroupList = async () => {
   const session = await getServerSession();

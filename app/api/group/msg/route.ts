@@ -1,6 +1,7 @@
 import supabase from "@/app/_components/supabase";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/prisma/client";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();

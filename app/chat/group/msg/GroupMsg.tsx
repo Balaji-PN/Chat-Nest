@@ -2,6 +2,7 @@ import { Flex, ScrollArea, Text } from "@radix-ui/themes";
 import NewMsgForm from "./NewMsgForm";
 import TopBar from "./TopBar";
 import Message from "./Message";
+import prisma from "@/prisma/client";
 
 const GroupMsg = async ({
   groupId,

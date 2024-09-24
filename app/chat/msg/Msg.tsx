@@ -4,6 +4,7 @@ import { Flex, ScrollArea } from "@radix-ui/themes";
 import MsgComp from "./MsgComp";
 import NewMsgForm from "./NewMsgForm";
 import TopBar from "./TopBar";
+import prisma from "@/prisma/client";
 
 const Msg = async ({ chatId, user }: { chatId: string; user: string }) => {
   const chat = await prisma.chat.findUnique({
