@@ -1,20 +1,28 @@
 "use client";
 
 import supabase from "@/app/_components/supabase";
-import { Message } from "@prisma/client";
 import { Flex, Text } from "@radix-ui/themes";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+
+interface MessageWithFiles {
+  content: string;
+  id: string;
+  sender: string;
+  receiver: string;
+  docs?: string[]; // Array of file paths
+}
 
 const MsgComp = ({
   message,
   chatId,
   receiver,
 }: {
-  message: Message[];
+  message: MessageWithFiles[];
   chatId: string;
   receiver: string;
 }) => {
-  const [messages, setMessages] = useState<Message[]>(message);
+  const [messages, setMessages] = useState<MessageWithFiles[]>(message);
+
   useEffect(() => {
     const channel = supabase
       .channel(chatId)
@@ -27,6 +35,11 @@ const MsgComp = ({
       supabase.removeChannel(channel);
     };
   }, [supabase]);
+
+  // Helper function to get the full URL of the file
+  const getFileUrl = (filePath: string) => {
+    return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/test/${filePath}`;
+  };
 
   return (
     <Flex direction="column" gap="2" className="py-4 min-h-full">
@@ -45,7 +58,22 @@ const MsgComp = ({
                   : "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100"
               }`}
             >
-              <Text size="2">{m.content}</Text>
+              {/* Display text content */}
+              {m.content && <Text size="2">{m.content}</Text>}
+
+              {/* Display attached images, if any */}
+              {m.docs && m.docs?.length > 0 && (
+                <div className="mt-2 space-y-2">
+                  {m.docs.map((filePath, index) => (
+                    <img
+                      key={index}
+                      src={getFileUrl(filePath)}
+                      alt="Uploaded file"
+                      className="max-w-full h-auto rounded-lg"
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         ))

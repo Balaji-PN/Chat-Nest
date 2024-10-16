@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
         receiver: body.receiver,
         time: new Date(),
         chatid: body.chatId,
+        docs: body.files,
       },
     })
     .catch(() => "Message sending failed");

@@ -27,8 +27,7 @@ const ThemeSwitch = () => {
         color="gray"
         highContrast
       >
-        {theme == "light" && <CiDark size={26} />}
-        {theme == "dark" && <CiLight size={26} />}
+        {theme == "light" ? <CiDark size={26} /> : <CiLight size={26} />}
       </IconButton>
     </div>
   );

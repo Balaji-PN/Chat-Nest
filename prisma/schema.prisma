@@ -62,6 +62,7 @@ model Message {
   time     DateTime
   sender   String
   receiver String
+  docs String[]
   chatRel  Chat     @relation(fields: [chatid], references: [id], onDelete: Cascade)
 }
 
