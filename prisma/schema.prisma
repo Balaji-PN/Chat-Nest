@@ -77,7 +77,7 @@ model Members {
   memberId String  @id @default(cuid())
   groupId  String
   userId   String
-  isAdmin  Boolean
+  isAdmin  Boolean? @default(false)
   groupRel Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   @@index([userId, groupId])

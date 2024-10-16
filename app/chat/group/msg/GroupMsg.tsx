@@ -20,7 +20,11 @@ const GroupMsg = async ({
       direction="column"
       className="h-screen max-h-screen py-4 mx-2 max-w-[100vw] md:w-full"
     >
-      <TopBar name={group?.name!} description={group?.description!} />
+      <TopBar
+        name={group?.name!}
+        description={group?.description!}
+        gId={groupId}
+      />
       <Flex direction="column" className="overflow-hidden max-h-[86vh]">
         <ScrollArea className="flex-grow min-h-[80vh] px-4 mb-4">
           <Message M={messages} user={user} gId={groupId} />
