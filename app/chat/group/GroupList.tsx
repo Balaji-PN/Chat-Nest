@@ -1,5 +1,4 @@
 import prisma from "@/prisma/client";
-import { Flex, Heading } from "@radix-ui/themes";
 import { getServerSession } from "next-auth";
 import Group from "./Group";
 import NewGroup from "./NewGroup";
@@ -11,22 +10,19 @@ const GroupList = async () => {
     include: { member: true },
   });
   return (
-    <Flex direction="column" className="shadow-lg rounded-md">
-      <Flex
-        className="w-full dark:bg-zinc-800 bg-zinc-200 rounded-t-md py-1 px-2"
-        justify="between"
-        align={"center"}
+    <div className="flex flex-col shadow-lg rounded-md">
+      <div
+        className="w-full dark:bg-gray-900 bg-zinc-200 rounded-t-md py-1 px-2 flex justify-between items-center"
       >
-        <Heading>Groups</Heading>
+        <h2 className="text-2xl font-bold">Groups</h2>
         <NewGroup />
-      </Flex>
-      <Flex
-        gap="3"
-        className="dark:bg-zinc-900 bg-zinc-100 p-3 rounded-b-md overflow-x-scroll"
+      </div>
+      <div
+        className="flex gap-3 dark:bg-gray-950 bg-zinc-100 p-3 rounded-b-md overflow-x-scroll no-scrollbar"
       >
         <Group g={groups} user={session?.user?.email!} />
-      </Flex>
-    </Flex>
+      </div>
+    </div>
   );
 };
 

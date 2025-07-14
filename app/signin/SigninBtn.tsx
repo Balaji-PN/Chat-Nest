@@ -1,14 +1,14 @@
 "use client";
 
-import { Button } from "@radix-ui/themes";
 import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
+import { Button } from "@/components/ui/button";
 
 const SigninBtn = () => {
   return (
-    <Button variant="outline" color="gray" onClick={() => signIn("google")}>
+    <Button variant="outline" onClick={() => signIn("google")} className="w-full">
       Signin with Google
-      <FcGoogle />
+      <FcGoogle className="ml-2" />
     </Button>
   );
 };

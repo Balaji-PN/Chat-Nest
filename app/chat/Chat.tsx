@@ -1,9 +1,9 @@
 "use client";
 
 import { Chat } from "@prisma/client";
-import { Avatar, Flex, Text } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import supabase from "../_components/supabase";
 
 const ChatComp = ({ InitChats, user }: { InitChats: Chat[]; user: string }) => {
@@ -21,32 +21,33 @@ const ChatComp = ({ InitChats, user }: { InitChats: Chat[]; user: string }) => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase]);
+  }, [user]);
 
   return (
     <>
       {chats &&
         chats?.map((c) => (
-          <Flex
-            align={"center"}
-            gap="2"
+          <div
+            className="flex items-center gap-2 hover:cursor-pointer p-2 rounded-md transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
             key={c.id}
             onClick={() => router.push("/?mode=chat&id=" + c.id)}
-            className="hover:cursor-pointer"
           >
-            <Avatar
-              src={c.user1 == user ? c.user2Profile! : c.user1Profile!}
-              fallback={c.user1 == user ? c.user2.charAt(0) : c.user1.charAt(0)}
-              size="4"
-              radius="full"
-            />
-            <Flex direction="column">
-              <Text size="2" weight={"medium"} className="mb-2">
+            <Avatar className="w-12 h-12 border-2 border-gray-300 dark:border-gray-600">
+              <AvatarImage
+                src={c.user1 == user ? c.user2Profile! : c.user1Profile!}
+                alt={c.user1 == user ? c.user2 : c.user1}
+              />
+              <AvatarFallback className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                {(c.user1 == user ? c.user2.charAt(0) : c.user1.charAt(0))}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+              <p className="text-sm font-medium mb-2 text-gray-800 dark:text-gray-200">
                 {c.user1 == user ? c.user2Name : c.user1Name}
-              </Text>
-              <Text size="1">{c.user1 == user ? c.user2 : c.user1}</Text>
-            </Flex>
-          </Flex>
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{c.user1 == user ? c.user2 : c.user1}</p>
+            </div>
+          </div>
         ))}
     </>
   );

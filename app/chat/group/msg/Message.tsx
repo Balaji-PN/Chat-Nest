@@ -2,11 +2,15 @@
 
 import supabase from "@/app/_components/supabase";
 import { GroupMessage as M } from "@prisma/client";
-import { Flex, Text } from "@radix-ui/themes";
 import React, { useEffect, useState } from "react";
 
 const Message = ({ M, user, gId }: { M: M[]; user: string; gId: string }) => {
   const [messages, setMessages] = useState(M);
+  
+  useEffect(() => {
+    setMessages(M);
+  }, [M]);
+
   useEffect(() => {
     const channel = supabase
       .channel(gId)
@@ -25,7 +29,7 @@ const Message = ({ M, user, gId }: { M: M[]; user: string; gId: string }) => {
   }, [gId]);
 
   return (
-    <Flex direction="column" gap="2" className="py-4 min-h-full">
+    <div className="flex flex-col gap-2 py-4 min-h-full">
       {messages.length > 0 ? (
         messages.map((m) => (
           <div
@@ -37,25 +41,25 @@ const Message = ({ M, user, gId }: { M: M[]; user: string; gId: string }) => {
             <div
               className={`max-w-xs p-3 rounded-lg ${
                 m.sender !== user
-                  ? "bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100"
-                  : "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100"
+                  ? "bg-blue-100 text-blue-800 dark:bg-blue-700 dark:text-blue-100"
+                  : "bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-100"
               }`}
             >
-              <Text size="2">{m.content}</Text>
+              <p className="text-sm">{m.content}</p>
               {m.sender !== user && (
-                <Text size="1" className="text-gray-400 mt-1">
+                <p className="text-xs text-gray-400 mt-1">
                   {m.sender}
-                </Text>
+                </p>
               )}
             </div>
           </div>
         ))
       ) : (
-        <Flex align="center" justify="center" className="h-full">
-          <Text>No messages found.</Text>
-        </Flex>
+        <div className="flex items-center justify-center h-full">
+          <p>No messages found.</p>
+        </div>
       )}
-    </Flex>
+    </div>
   );
 };
 

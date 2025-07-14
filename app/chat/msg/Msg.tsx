@@ -1,10 +1,10 @@
 "use server";
 
-import { Flex, ScrollArea } from "@radix-ui/themes";
 import MsgComp from "./MsgComp";
 import NewMsgForm from "./NewMsgForm";
 import TopBar from "./TopBar";
 import prisma from "@/prisma/client";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const Msg = async ({ chatId, user }: { chatId: string; user: string }) => {
   const chat = await prisma.chat.findUnique({
@@ -18,18 +18,15 @@ const Msg = async ({ chatId, user }: { chatId: string; user: string }) => {
   });
 
   return (
-    <Flex
-      direction="column"
-      className="h-screen max-h-screen py-4 mx-2 max-w-[100vw] md:w-full"
-    >
+    <div className="flex flex-col h-screen py-4 mx-2 max-w-[100vw] md:w-full">
       <TopBar receiver={receiver!} />
-      <Flex direction="column" className="overflow-hidden max-h-[86vh]">
-        <ScrollArea className="flex-grow min-h-[80vh] px-4 mb-4">
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <ScrollArea className="flex-1 px-4 mb-4">
           <MsgComp message={messages} chatId={chatId} receiver={receiver!} />
         </ScrollArea>
-      </Flex>
+      </div>
       <NewMsgForm chatId={chatId} receiver={receiver!} />
-    </Flex>
+    </div>
   );
 };
 

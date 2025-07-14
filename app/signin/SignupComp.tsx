@@ -1,37 +1,31 @@
-import { Button, Flex, TextField } from "@radix-ui/themes";
 import { FaKey, FaRegUser } from "react-icons/fa";
 import {
   MdDriveFileRenameOutline,
   MdOutlineAlternateEmail,
 } from "react-icons/md";
 import "server-only";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const SignupComp = () => {
   return (
-    <Flex direction="column" gap="2" className="my-8">
-      <TextField.Root radius="medium" placeholder="John Doe" type="text">
-        <TextField.Slot>
-          <MdDriveFileRenameOutline size={18} />
-        </TextField.Slot>
-      </TextField.Root>
-      <TextField.Root
-        radius="medium"
-        placeholder="sample@gmail.com"
-        type="email"
-      >
-        <TextField.Slot>
-          <MdOutlineAlternateEmail size={18} />
-        </TextField.Slot>
-      </TextField.Root>
-      <TextField.Root radius="large" placeholder="*******" type="password">
-        <TextField.Slot>
-          <FaKey size={16} />
-        </TextField.Slot>
-      </TextField.Root>
-      <Button variant="soft">
-        Signup <FaRegUser />
+    <div className="flex flex-col gap-4 my-8">
+      <div className="relative">
+        <Input type="text" placeholder="John Doe" className="pl-8" />
+        <MdDriveFileRenameOutline size={18} className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400" />
+      </div>
+      <div className="relative">
+        <Input type="email" placeholder="sample@gmail.com" className="pl-8" />
+        <MdOutlineAlternateEmail size={18} className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400" />
+      </div>
+      <div className="relative">
+        <Input type="password" placeholder="*******" className="pl-8" />
+        <FaKey size={16} className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400" />
+      </div>
+      <Button className="w-full">
+        Signup <FaRegUser className="ml-2" />
       </Button>
-    </Flex>
+    </div>
   );
 };
 

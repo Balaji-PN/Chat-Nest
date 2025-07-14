@@ -1,6 +1,5 @@
 "use server";
 
-import { Flex, Heading, Text } from "@radix-ui/themes";
 import ChatComp from "./Chat";
 import NewChat from "./NewChat";
 import prisma from "@/prisma/client";
@@ -14,23 +13,19 @@ const ChatList = async () => {
     },
   });
   return (
-    <Flex direction="column" className="shadow-2xl rounded-md">
-      <Flex
-        className="w-full dark:bg-zinc-800 bg-zinc-200 rounded-t-md py-1 px-2"
-        justify="between"
-        align="center"
+    <div className="flex flex-col shadow-2xl rounded-md">
+      <div
+        className="w-full dark:bg-gray-900 bg-zinc-200 rounded-t-md py-1 px-2 flex justify-between items-center"
       >
-        <Heading>Chats</Heading>
+        <h2 className="text-2xl font-bold">Chats</h2>
         <NewChat />
-      </Flex>
-      <Flex
-        gap="3"
-        direction="column"
-        className="dark:bg-zinc-900 bg-zinc-100 p-3 rounded-b-md"
+      </div>
+      <div
+        className="flex flex-col gap-3 dark:bg-gray-950 bg-zinc-100 p-3 rounded-b-md"
       >
         <ChatComp InitChats={chats} user={session?.user?.email!} />
-      </Flex>
-    </Flex>
+      </div>
+    </div>
   );
 };
 

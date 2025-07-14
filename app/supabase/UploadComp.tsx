@@ -1,9 +1,9 @@
 "use client";
 
-import { Button } from "@radix-ui/themes";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import { Button } from "@/components/ui/button";
 
 const UploadComp = () => {
   const supabase = createClientComponentClient();
@@ -18,7 +18,7 @@ const UploadComp = () => {
       });
   };
   return (
-    <>
+    <div className="flex flex-col items-center gap-4">
       <input
         type="file"
         onChange={(e) => {
@@ -27,7 +27,7 @@ const UploadComp = () => {
         }}
       />
       <Button onClick={handleUpload}>Upload</Button>
-    </>
+    </div>
   );
 };
 

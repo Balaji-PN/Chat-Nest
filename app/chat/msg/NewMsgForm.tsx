@@ -1,12 +1,13 @@
 "use client";
 
 import supabase from "@/app/_components/supabase";
-import { Button, Flex, TextField } from "@radix-ui/themes";
 import axios from "axios";
 import { useRef, useState } from "react";
 import { CiCircleRemove, CiFileOn } from "react-icons/ci";
-import { IoIosAdd, IoIosSend } from "react-icons/io";
-import { LuMessageSquareDashed } from "react-icons/lu";
+import { IoIosAttach, IoIosSend } from "react-icons/io";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 interface FileWithPreview {
   file: File;
@@ -36,33 +37,29 @@ const NewMsgForm = ({
     setIsUploading(true);
 
     // Upload selected files to Supabase
-    const uploadedFileIds = await Promise.all(
-      selectedFiles.map(async (fileObj) => {
-        const { data: uploadData, error } = await supabase.storage
-          .from("test")
-          .upload(`${chatId}/${fileObj.file.name}`, fileObj.file);
+    const uploadedFilePaths: string[] = [];
 
-        if (error) {
-          console.error("Error uploading file:", error);
-          return null;
-        }
+    for (const fileObj of selectedFiles) {
+      const { data, error } = await supabase.storage
+        .from("test")
+        .upload(`${chatId}/${fileObj.file.name}`, fileObj.file);
 
-        return uploadData?.path || null;
-      })
-    );
+      if (error) {
+        console.error("Error uploading file:", error);
+        setIsUploading(false);
+        return;
+      }
+      if (data) {
+        uploadedFilePaths.push(data.path);
+      }
+    }
 
-    const validFileIds = uploadedFileIds.filter(
-      (id): id is string => id !== null
-    );
-
-    console.log("Uploaded file IDs:", validFileIds);
-
-    // Send message along with uploaded file IDs to the server
+    // Send message along with uploaded file paths to the server
     await axios.post("/api/chat/msg", {
       content,
       receiver,
       chatId,
-      files: validFileIds, // Send file paths with message content
+      files: uploadedFilePaths, // Send file paths with message content
     });
 
     setContent("");
@@ -96,24 +93,41 @@ const NewMsgForm = ({
   };
 
   return (
-    <>
-      <Flex justify="between" gap="3">
-        {/* Trigger file input for uploading files */}
-        <Button size="3" onClick={triggerFileInput} variant="outline">
-          <IoIosAdd />
-        </Button>
-        <TextField.Root
-          placeholder="Type the Message...."
-          className="flex-1"
-          onChange={(c) => setContent(c.target.value)}
-          size={"3"}
-          value={content}
-        >
-          <TextField.Slot>
-            <LuMessageSquareDashed size={16} />
-          </TextField.Slot>
-        </TextField.Root>
+    <div className="border-t border-gray-200 dark:border-gray-700 p-4 flex flex-col gap-3">
+      {selectedFiles.length > 0 && (
+        <ScrollArea className="w-full rounded-lg border p-3 mb-2">
+          <div className="flex w-max space-x-2">
+            {selectedFiles.map((fileObj) => (
+              <div
+                key={fileObj.id}
+                className="relative flex items-center bg-secondary text-secondary-foreground rounded-md pl-2 pr-1 py-1 text-sm shadow-sm border border-gray-200 dark:border-gray-600"
+              >
+                {isImageFile(fileObj.file.name) && fileObj.preview ? (
+                  <img
+                    src={fileObj.preview}
+                    alt={fileObj.file.name}
+                    className="h-7 w-7 object-cover rounded-sm mr-2"
+                  />
+                ) : (
+                  <CiFileOn className="w-5 h-5 mr-2 text-muted-foreground" />
+                )}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="ml-1 h-5 w-5 rounded-full bg-background text-red-500 hover:bg-red-100 dark:hover:bg-red-800 absolute -top-2 -right-2"
+                  onClick={() => removeFile(fileObj.id)}
+                >
+                  <CiCircleRemove className="w-3 h-3" />
+                </Button>
+              </div>
+            ))}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+      )}
 
+      <div className="flex items-end gap-2">
         <input
           ref={fileInputRef}
           type="file"
@@ -121,47 +135,39 @@ const NewMsgForm = ({
           onChange={handleFileChange}
           className="hidden"
         />
+        
+        <div className="relative flex-1 rounded-lg border border-input bg-background focus-within:ring-1 focus-within:ring-primary focus-within:border-primary p-2">
+          <Textarea
+            placeholder="Type your message..."
+            onChange={(e) => setContent(e.target.value)}
+            value={content}
+            className="min-h-[2.5rem] max-h-[10rem] resize-y pl-10 pr-2 pt-2 pb-2 border-none shadow-none focus-visible:ring-0 text-base leading-tight"
+          />
+          <Button
+            type="button"
+            size="icon"
+            variant="ghost"
+            onClick={triggerFileInput}
+            className="absolute left-2 bottom-2 text-gray-500 dark:text-gray-400 hover:bg-transparent h-8 w-8"
+          >
+            <IoIosAttach size={20} />
+          </Button>
+        </div>
 
         <Button
-          size="3"
+          type="submit"
           onClick={handleSubmit}
-          variant="outline"
-          disabled={isUploading}
+          disabled={isUploading || (content.trim() === '' && selectedFiles.length === 0)}
+          className="h-10 w-10 shrink-0"
         >
-          {isUploading ? "Uploading..." : <IoIosSend size={18} />}
+          {isUploading ? (
+            <span className="animate-pulse">...</span>
+          ) : (
+            <IoIosSend size={20} />
+          )}
         </Button>
-      </Flex>
-
-      {/* Display selected file previews */}
-      {selectedFiles.length > 0 && (
-        <div className="mt-4 grid grid-cols-3 gap-4">
-          {selectedFiles.map((fileObj) => (
-            <div key={fileObj.id} className="relative p-2 rounded">
-              <div className="flex items-center justify-center h-24 mb-2">
-                {isImageFile(fileObj.file.name) && fileObj.preview ? (
-                  <img
-                    src={fileObj.preview}
-                    alt={fileObj.file.name}
-                    className="max-h-full max-w-full object-contain"
-                  />
-                ) : (
-                  <CiFileOn className="w-12 h-12 text-gray-400" />
-                )}
-              </div>
-              <p className="text-xs truncate">{fileObj.file.name}</p>
-              <Button
-                type="button"
-                variant="ghost"
-                className="absolute top-1 right-1"
-                onClick={() => removeFile(fileObj.id)}
-              >
-                <CiCircleRemove className="w-4 h-4" />
-              </Button>
-            </div>
-          ))}
-        </div>
-      )}
-    </>
+      </div>
+    </div>
   );
 };
 

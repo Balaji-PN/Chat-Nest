@@ -1,7 +1,6 @@
 "use client";
 
 import supabase from "@/app/_components/supabase";
-import { Flex, Text } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
 
 interface MessageWithFiles {
@@ -24,6 +23,10 @@ const MsgComp = ({
   const [messages, setMessages] = useState<MessageWithFiles[]>(message);
 
   useEffect(() => {
+    setMessages(message);
+  }, [message]);
+
+  useEffect(() => {
     const channel = supabase
       .channel(chatId)
       .on("broadcast", { event: "real-msg" }, ({ payload }) => {
@@ -34,7 +37,7 @@ const MsgComp = ({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase]);
+  }, [chatId]);
 
   // Helper function to get the full URL of the file
   const getFileUrl = (filePath: string) => {
@@ -42,7 +45,7 @@ const MsgComp = ({
   };
 
   return (
-    <Flex direction="column" gap="2" className="py-4 min-h-full">
+    <div className="flex flex-col gap-2 py-4 min-h-full">
       {messages.length > 0 ? (
         messages.map((m) => (
           <div
@@ -54,12 +57,12 @@ const MsgComp = ({
             <div
               className={`max-w-xs p-3 rounded-lg ${
                 m.sender === receiver
-                  ? "bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100"
-                  : "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100"
+                  ? "bg-blue-100 text-blue-800 dark:bg-blue-700 dark:text-blue-100"
+                  : "bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-100"
               }`}
             >
               {/* Display text content */}
-              {m.content && <Text size="2">{m.content}</Text>}
+              {m.content && <p className="text-sm">{m.content}</p>}
 
               {/* Display attached images, if any */}
               {m.docs && m.docs?.length > 0 && (
@@ -78,11 +81,11 @@ const MsgComp = ({
           </div>
         ))
       ) : (
-        <Flex align="center" justify="center" className="h-full">
-          <Text>No messages found.</Text>
-        </Flex>
+        <div className="flex items-center justify-center h-full">
+          <p>No messages found.</p>
+        </div>
       )}
-    </Flex>
+    </div>
   );
 };
 

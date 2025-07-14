@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "@radix-ui/themes/styles.css";
 import ThemeProvider from "./_components/ThemeProvider";
 import Session from "./api/auth/[...nextauth]/Session";
 import "./globals.css";
@@ -24,11 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
-      <body
-        className={
-          inter.className + "bg-backgroundLight dark:bg-backgroundDark"
-        }
-      >
+      <body className={inter.className}>
         <Session>
           <ThemeProvider>
             <Toaster position="top-center" />
